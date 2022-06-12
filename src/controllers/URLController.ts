@@ -1,4 +1,4 @@
-import { URLModel } from "../database/model/Url";
+import { URLModel } from "../database/model/URL";
 import { Request, response, Response } from "express";
 import shortId from "shortid";
 import { config } from "../config/Constants";
@@ -24,11 +24,14 @@ export class URLController {
 
   public async redirect(req: Request, res: Response): Promise<void> {
     const { hash } = req.params;
-    const url = {
-      originURL: "https://web.dio.me/home",
-      hash: "gVFcFAytw",
-      shortURL: "http://localhost:5000/gVFcFAytw",
-    };
+
+    const url = await URLModel.findOne({ hash });
+
+    if (!url) {
+      res.status(400).json({ error: "URL Not found" });
+      return;
+    }
+
     res.redirect(url.originURL);
   }
 }
